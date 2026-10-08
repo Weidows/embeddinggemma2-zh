@@ -1,0 +1,30 @@
+[project]
+name = "embeddinggemma2-zh"
+version = "0.1.0"
+description = "Chinese evaluation (MTEB-zh / C-MTEB) and fine-tune of google/embeddinggemma-2 (740M multimodal embedding)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "torchvision",
+    "transformers>=5.19.0",
+    "sentence-transformers>=6.1.0",
+    "datasets>=3.0.0",
+    "accelerate",
+    "numpy",
+    "pandas",
+    "tqdm",
+    "rich",
+    "safetensors",
+    "mteb>=2.0.0",
+    "pillow>=12.3.0",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

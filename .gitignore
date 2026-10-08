@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.uv/
+models/
+results/raw/
+cache/
+*.log
+.hermes/
