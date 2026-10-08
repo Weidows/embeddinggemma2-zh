@@ -18,6 +18,7 @@ dependencies = [
     "safetensors",
     "mteb>=2.0.0",
     "pillow>=12.3.0",
+    "peft>=0.21.2",
 ]
 
 [tool.uv.sources]

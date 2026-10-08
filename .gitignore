@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .uv/
 models/
+data/*.jsonl
 results/raw/
 cache/
 *.log

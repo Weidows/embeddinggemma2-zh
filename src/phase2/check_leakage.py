@@ -27,21 +27,19 @@ def norm(s: str) -> str:
     return re.sub(r"\s+", "", str(s)).strip().lower()
 
 
-def load_first(ds_id: str, config: str | None = None):
-    cfgs = None
+def load_first(ds_id: str, split: str | None = None):
+    """corpus/queries are *splits* in the C-MTEB datasets, not configs."""
     try:
-        if config is not None:
-            ds = load_dataset(ds_id, config)
-        else:
-            ds = load_dataset(ds_id)
-        split = list(ds.keys())[0]
-        return ds[split]
+        if split is not None:
+            return load_dataset(ds_id, split=split)
+        ds = load_dataset(ds_id)
+        return ds[list(ds.keys())[0]]
     except Exception as exc:  # noqa: BLE001
         try:
             cfgs = get_dataset_config_names(ds_id)
         except Exception:  # noqa: BLE001
             cfgs = "?"
-        print(f"  !! {ds_id} (config={config}) failed: {exc} | configs={cfgs}")
+        print(f"  !! {ds_id} (split={split}) failed: {exc} | configs={cfgs}")
         return None
 
 
@@ -82,16 +80,31 @@ def main() -> None:
     cm_train = load_first("wangrongsheng/cMedQA-V2.0")
     if cm_train is not None:
         print("  cMedQA-V2.0 cols:", cm_train.column_names, "rows:", cm_train.num_rows)
+        # NOTE: in this dataset `input` is EMPTY and the real question lives in `instruction`.
+        # Picking `input` would compare empty strings and report a meaningless overlap of 0.
         col = None
-        for c in ("question", "questions", "q", "input"):
-            if c in cm_train.column_names:
+        for c in ("instruction", "question", "questions", "q", "input"):
+            if c in cm_train.column_names and sum(1 for x in cm_train[c][:200] if str(x).strip()) > 100:
                 col = c
                 break
+        print(f"  question column resolved to: {col!r}")
         if col and cmedqa_q is not None:
             qcol = "text" if "text" in cmedqa_q.column_names else cmedqa_q.column_names[-1]
             train_qs = [norm(x) for x in cm_train[col]]
             eval_qs = [norm(x) for x in cmedqa_q[qcol]]
             compare("cMedQA-V2.0 train", train_qs, "CmedqaRetrieval eval queries", eval_qs)
+
+    print("\n[4] corpus overlap (training answers vs eval corpus)")
+    cmedqa_c = load_first("C-MTEB/CmedqaRetrieval", "corpus")
+    if cmedqa_c is not None and cm_train is not None:
+        ccol = "text" if "text" in cmedqa_c.column_names else cmedqa_c.column_names[-1]
+        corpus = {norm(x) for x in cmedqa_c[ccol]}
+        print(f"  CmedqaRetrieval corpus rows: {cmedqa_c.num_rows}")
+        out_col = "output" if "output" in cm_train.column_names else None
+        if out_col:
+            sample = [norm(x) for x in cm_train[out_col][:20000]]
+            hits = sum(1 for x in sample if x in corpus)
+            print(f"  first 20k cMedQA train answers appearing verbatim in the eval corpus: {hits}")
 
     if cmedqa_q is not None and medical_q is not None:
         qcol = "text" if "text" in cmedqa_q.column_names else cmedqa_q.column_names[-1]
@@ -99,6 +112,36 @@ def main() -> None:
         print()
         compare("CmedqaRetrieval queries", [norm(x) for x in cmedqa_q[qcol]],
                 "MedicalRetrieval queries", [norm(x) for x in medical_q[mcol]])
+
+    # ---------- STS: are the train splits disjoint from the evaluated splits? ----------
+    print("\n[5] STS train vs evaluated split (mteb evaluates these splits)")
+    EVAL_SPLITS = {
+        "C-MTEB/AFQMC": ["validation"],
+        "C-MTEB/ATEC": ["validation", "test"],
+        "C-MTEB/BQ": ["validation", "test"],
+        "C-MTEB/LCQMC": ["test"],
+        "C-MTEB/PAWSX": ["test"],
+        "C-MTEB/STSB": ["validation", "test"],
+    }
+    for ds, splits in EVAL_SPLITS.items():
+        try:
+            tr = load_dataset(ds, split="train")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  {ds}: train load ERR {str(exc)[:80]}")
+            continue
+        tr_pairs = {(norm(a), norm(b)) for a, b in zip(tr["sentence1"], tr["sentence2"])}
+        tr_s1 = {norm(a) for a in tr["sentence1"]}
+        for sp in splits:
+            try:
+                ev = load_dataset(ds, split=sp)
+            except Exception as exc:  # noqa: BLE001
+                print(f"  {ds}[{sp}]: ERR {str(exc)[:60]}")
+                continue
+            ev_pairs = {(norm(a), norm(b)) for a, b in zip(ev["sentence1"], ev["sentence2"])}
+            pair_overlap = len(tr_pairs & ev_pairs)
+            s1_overlap = sum(1 for a in {norm(x) for x in ev["sentence1"]} if a in tr_s1)
+            print(f"  {ds}[{sp}]: eval_pairs={len(ev_pairs)}  pair_overlap={pair_overlap}  "
+                  f"eval_sentence1_seen_in_train={s1_overlap}")
 
 
 if __name__ == "__main__":

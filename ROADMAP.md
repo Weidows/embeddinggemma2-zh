@@ -39,9 +39,9 @@
 
 | # | 步骤 | 为什么 | 运行记录 | 验收成果（可独立验证） | 状态 |
 |---|---|---|---|---|---|
-| 2.1 | 数据可得性 + **泄漏检查** | 医疗检索的 qrels 就是评测标签，若拿它造训练对就是作弊 —— 必须先证明训练源与评测集零重叠 | 已确认 STS 六任务有 **train split**（AFQMC/ATEC/BQ/LCQMC/PAWSX/STSB）；医疗检索任务**只有 corpus+queries+qrels**，必须用外部源（cMedQA-V2.0）。`src/phase2/check_leakage.py` 待跑 | 脚本输出：训练源 ∩ 评测查询 = **0** | ⏳ |
-| 2.2 | 构造中文训练对 / 三元组 | 微调需要 in-domain 对比数据 | | 数据集统计 + 抽样人工检查 + 硬负样本来源说明 | ⬜ |
-| 2.3 | LoRA 对比学习微调（bf16，禁用 fp16） | 271M 文本骨干在 16GB 卡上 LoRA 足够 | | loss 曲线 + 完整训练配置 + 可复现命令 | ⬜ |
+| 2.1 | 数据可得性 + **泄漏检查** | 医疗检索的 qrels 就是评测标签，若拿它造训练对就是作弊 —— 必须先证明训练源与评测集零重叠 | **抓到一次假通过**：`cMedQA-V2.0` 的 `input` 列全为空、真问题在 `instruction` 列，按 `input` 比较得到"重叠 0"，实为在比空字符串；修正列名后**7,592 行训练问题命中 3,999 条评测查询（评测查询 100% 在训练集内）**。另测得 8,776 行训练答案命中评测语料。STS 侧：pair 级重叠 AFQMC/ATEC/PAWSX = 0，BQ 1~2、STSB 10~13、LCQMC 30（已全部剔除；LCQMC 有 43% 评测句在训练集出现过，属该数据集固有改写特性） | 重建后训练集：查询/文档重叠均为 **0**；医疗保留 120,000 对、STS 保留约 15 万对 | ⏳ 重建验证中 |
+| 2.2 | 构造中文训练对 / 三元组 | 微调需要 in-domain 对比数据 | **完成**：中文 STS **~156,000** 对（AFQMC/ATEC/BQ/LCQMC/PAWSX/STSB 的 train split，取高相似度对，剔除与评测 pair 重复的 91 条）+ 医疗 **120,000** 对（cMedQA-V2.0 的 question→answer，去污染后）。前缀已按评测口径烘进文本（STS 用 `task: sentence similarity \| query: `，检索用 `task: search result \| query: ` 与 `title: none \| text: `）。产物 `data/train_pairs.jsonl`（101.9 MB）+ `data/train_pairs_sample.txt` + `train_pairs_stats.json` | 脚本重跑可复现；`check_leakage.py` 输出重叠为 0 | ✅ |
+| 2.3 | LoRA 对比学习微调（bf16，禁用 fp16） | 271M 文本骨干在 16GB 卡上 LoRA 足够 | smoke 20 步已验证：`trainable=10.92M (4.03%)`、train=273,549 / val=2,764、loss 0.7777→0.5464、0.4 min。踩坑：① PEFT 无法包装视觉塔的 `Gemma4ClippableLinear` → 重载/校验时必须带 `config_kwargs` 关掉编解码器；② ST `save_pretrained` 在 PEFT 包装下只写 adapter（无 config.json/权重）→ 改为 merge 后由 transformers 写权重 + 拷回 ST/分词文件 | loss 曲线 + 完整训练配置 + 可复现命令 | ⏳ smoke 通过，全量待跑 |
 | 2.4 | 复跑 C-MTEB 全量并对比 | 证明微调真的有效，而非自说自话 | | 微调前后 31 任务同口径对比表（含 bge-m3 对照） | ⬜ |
 | 2.5 | 发布 `Weidows/embeddinggemma-2-zh` 权重 + 卡片 | 中文第一个 v2 微调 | | HF 仓库可下载 + 第三方按 card 步骤复现出同分数 | ⬜ |
 

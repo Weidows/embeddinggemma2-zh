@@ -1,0 +1,160 @@
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 全部症状：右侧头痛伴随着脸肿右侧身体麻木胳膊和脸疼痛爱发脾气发病时间及原因：一年治疗情况：在北京安定医院救治
+  P: title: none | text: 偏头疼是一种功能性的疾病，是由于紧张压力或是精神因素引起的神经功能失调造成的头痛，也有一定的遗传因素，是属于血管神经性头疼的范畴，有视觉先兆症状，检查不会有问题，最好是用中药治疗效果好，静痛灵方剂对偏头痛有特效，没有不良副作用，同时结合针灸按摩，效果会更好的。
+
+[sts/PAWSX]
+  A: task: sentence similarity | query: 他曾效力于Wolverhampton Wanderers，Kidderminster Harriers，Mansfield Town，Lincoln City，Northampton Town，Chesterfield和Gateshead。
+  P: task: sentence similarity | query: 他之前曾效力过Wolverhampton Wanderers，Kidderminster Harriers，Mansfield Town，Chesterfield，Northampton Town，Lincoln City和Gateshead。
+
+[sts/PAWSX]
+  A: task: sentence similarity | query: 参与Bon Air开发的其他研发官员是Thomas M. Logan将军，Andrew Talcott上校和Talcott的儿子Thomas Mann Randolph Talcott。
+  P: task: sentence similarity | query: 参与Bon Air发展的其他R'D官员是Thomas M. Logan将军，Andrew Talcott上校和Talcott的儿子Thomas Mann Randolph Talcott。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 全部症状：开始手上起小红点，然后起小水泡，如果挤破后会慢慢扩散。发病时间及原因：每年的夏天，无援无故治疗情况：用足光散治好后又复发
+  P: title: none | text: 这情况建议补充维生素B类，外擦达克灵，维生素B6软膏，愈裂霜治疗。多食富含维生素类食品，如新鲜水果、蔬菜等。也可以往患处涂维生素E。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 总觉得胃疼好像饿了很久一样，打嗝或放屁后会减轻疼痛，有的时候吃一点饭就胃胀是什么原因可以缓解吗
+  P: title: none | text: 那需要注意多是因为有消化不良引起的，会有腹胀，腹痛不适的。那你可以及时注意使用点多潘立酮片，注意饮食温热容易消化，配合点保和丸的。
+
+[sts/ATEC]
+  A: task: sentence similarity | query: 我想询，花呗，使用花呗，安全吗
+  P: task: sentence similarity | query: 推荐用花呗，安全吗
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 这个玉镯价格
+  P: task: sentence similarity | query: 这个玉镯的价格
+
+[sts/BQ]
+  A: task: sentence similarity | query: 为什么到现在还没有审核好
+  P: task: sentence similarity | query: 为什么我的审核通不过，你们这是根据什么评的
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 小孩几岁学轮滑
+  P: task: sentence similarity | query: 小孩子多大岁数适合学轮滑
+
+[sts/BQ]
+  A: task: sentence similarity | query: 为什么我没有开通啊
+  P: task: sentence similarity | query: 为什么我不能开通
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 都很长的时间了我就是感觉我的肛门有些不舒服总是感觉我的肛门有些疼痛的感觉前两天我一擦屁股发现有很多的血出来我就去做了个肛门视镜直肠视镜说我是得了痔疮了得了痔疮有什么解决的办法呢？
+  P: title: none | text: 多喝水多吃纤维类的水果每天一个香蕉也可以再吃点别的水果每天早上一杯蜂蜜水一天三餐规律饮食晚上尽量不要熬夜早睡早起最好一定不要再吃刺激的食物不要喝酒了
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 中国什么时候举办世界杯啊？
+  P: task: sentence similarity | query: 中国什么时候才能举办世界杯呢哎
+
+[sts/BQ]
+  A: task: sentence similarity | query: 你好，如何更换还款银行卡？
+  P: task: sentence similarity | query: 人工换卡
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 大师，帮我儿子取个好名字吧！
+  P: task: sentence similarity | query: 请大师帮我儿子取个好名字
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 全部症状：现在是尿黄，人无力，眼睛有黄点发病时间及原因：三年前有乙肝大三阳，住院治疗过，那是全身发黄，还有戊肝，转氨酶高治疗情况：吃了中药两天，说他肝火太旺
+  P: title: none | text: 你的症状是与乙型肝炎有关系的做肝功检查后护肝降酶治疗
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 我想问下，我上月来事过十天。我上月23号的，27号没有的，但是31号同房。请问我是否能怀孕，谢谢
+  P: title: none | text: 23号月经排卵期在本月8号左右才是排卵期31号同房会怀孕的只有排卵期内同房接触才有可能怀孕的安全期不会怀孕。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 我爸爸64岁，做CT说得了脑血栓，毛细血管堵塞，现在他头迷糊，脚不好使。让人头疼的是他还有肾炎，在医院输了几天麝香治疗脑血栓，可是我爸说他尿就少了，医生也说没有办法。我想问问有没有什么好的药治疗脑血栓的同时不会刺激到肾脏呢，谢谢
+  P: title: none | text: 这脑血栓在中医看来也是脑中风的，一般可考虑吃中草药补阳还五汤来调理的。中成药也可考虑使用，可选择步长脑心通胶囊或偏瘫复原丸等。
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 怎么查询驾驶证滴扣分情况
+  P: task: sentence similarity | query: 如何查询驾驶证扣分情况
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 如何与别人相处？
+  P: task: sentence similarity | query: 怎么跟人相处
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 腰部以下麻木疼痛大小便困难，屁股到大腿麻木的厉害，小便几乎尿不下去尿路做过B超没有问题，普通片CT查腰椎也没有问题，在261医院做了脊椎核磁说是脊髓有问题，具体什么问题不清楚让去大医院看，输过消炎药没有什么作用请问我这样的情况看什么科？应该去哪种医院？
+  P: title: none | text: 建议你可以CT检查一下，估计应该是腰椎压迫神经引起的症状。建议你可以针灸理疗一下。针灸、按摩、刮痧、拔罐，刺激穴位，促进血液循环，效果不错。平时注意活动局部，不要长时间弯腰或站立工作，注意保暖。
+
+[sts/PAWSX]
+  A: task: sentence similarity | query: 第一份报纸于1781年在该州出版，每周出版一期“佛蒙特公报”。
+  P: task: sentence similarity | query: 第一份报纸于1781年在该州出版，每周发行一次“佛蒙特公报”。
+
+[sts/ATEC]
+  A: task: sentence similarity | query: 花呗安全验证没有成功，登录不上怎么办
+  P: task: sentence similarity | query: 花呗安全验证没通过
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 这种修图的软件是什么？
+  P: task: sentence similarity | query: 这种修图软件是什么
+
+[sts/PAWSX]
+  A: task: sentence similarity | query: 一个月后，西班牙舰队在古巴圣地亚哥战役中被摧毁，船员被释放。
+  P: task: sentence similarity | query: 一个月后，西班牙舰队在古巴圣地亚哥战役中被摧毁，船员被释放。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 取环多久才可以怀宝宝我才取了环没有一星期就怀上宝宝这宝宝可以要不
+  P: title: none | text: 取环时对子宫是有伤害的，子宫恢复需要一定的时间，最好是3个月之后怀宝宝。建议等子宫恢复后，三个月之后怀宝宝，这三个月正好可以口服叶酸片。
+
+[sts/BQ]
+  A: task: sentence similarity | query: 最高额度多少
+  P: task: sentence similarity | query: 首次借款额度
+
+[sts/BQ]
+  A: task: sentence similarity | query: 支持得银行
+  P: task: sentence similarity | query: 微粒贷和哪些银行合作
+
+[sts/AFQMC]
+  A: task: sentence similarity | query: 蚂蚁借呗提前还款，比如分六个月那
+  P: task: sentence similarity | query: 蚂蚁借呗如何提前还钱
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 火车票怎么那么难买呢
+  P: task: sentence similarity | query: 火车票怎么这么难买啊
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 每天上班时精神不好，哈欠连天，一点力气都没有，请问是什么原因
+  P: title: none | text: 可能是与休息不好或是休息质量不高和是工作不感兴趣。注意避免这些情况就能够好转的。
+
+[sts/BQ]
+  A: task: sentence similarity | query: 多久会再度提升？
+  P: task: sentence similarity | query: 多久会提次额度
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 焦虑症一个多月了最开始发作为惊恐症心悸、失眠、恐惧后吃了心神安胶囊、好点到医院检查了甲亢所有的指标都正常就是T4游离甲状腺素为23从那以后又开始焦虑了生怕真的得了甲亢又胡思乱想怕甲亢会并发心脏病和糖尿病越想越怕晚上失眠、或睡得很轻没遗传和过敏请问我的问题如何缓解吃什么药？（
+  P: title: none | text: 对焦虑症患者的治疗首先是心理治疗以同情的心情去关心体贴患者协助其消除病因对病因有正确的认识解决具体困难并对疾病的性质加以科学的解释并配合给以适量的抗焦虑药物如利眠宁等
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 大概一个星期前开始，每天晚上临睡前都觉胃胀的厉害，还一直呃气，还想吐，有时还会放屁，今天上厕所时突然胃痛的厉害。请问这到底是什么原因啊。
+  P: title: none | text: 你这是胃排空不好所致的症状，建议服用胃动力药治疗。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 腰疼腿麻月期二个月不来没有怀孕。腿麻有7天。腰疼二年。月经不好有一年多
+  P: title: none | text: 可能要注意检查一下腰椎的，有可能与腰椎间盘突出症压迫坐骨神经有关。建议，去医院做相关检查，看看是哪种原因引起的，对症下药。
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 黄若舟《怎样快写钢笔字》
+  P: task: sentence similarity | query: 怎样快写钢笔字-黄若舟(高清).pdf
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 请问那要是准备怀孕，需要注意些什么吗
+  P: title: none | text: 一般在排卵期同房容易怀孕，如果你月经正常的话，你的排卵期大约在月经前的十四天左右，前五后四共十天。建议你如果想怀孕的话，最好是在此期间同房，可以提高受孕几率。平时房事后屁股底下垫个枕头，防止精液外流，提高受孕几率
+
+[sts/LCQMC]
+  A: task: sentence similarity | query: 在家就可以赚钱的工作有吗？
+  P: task: sentence similarity | query: 请问有没有在家就可以挣钱的工作呀
+
+[sts/PAWSX]
+  A: task: sentence similarity | query: 吉尔家族于1968年将该工厂出售，而新业主于1980年关闭了该工厂。
+  P: task: sentence similarity | query: 吉尔家族于1968年出售该工厂，并于1980年被新业主关闭。
+
+[medical/cMedQA-V2.0]
+  A: task: search result | query: 每天晚上手麻，疼痛不能睡觉
+  P: title: none | text: 手部麻痛是提示上肢神经受到了卡压。对于颈椎骨刺压迫神经，通过带刃针松开颈椎后关节周围的韧带，并用手法调整颈椎关节的位置，以达到不压迫神经的目的。同时配合中药，物理治疗，热敷，按摩，以改善局部血液循环，增加营养，早日恢复
+
+[sts/BQ]
+  A: task: sentence similarity | query: 为什么开通不了
+  P: task: sentence similarity | query: 为什么会贷款失败？
+

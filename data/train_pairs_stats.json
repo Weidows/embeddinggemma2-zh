@@ -1,0 +1,87 @@
+{
+  "total_pairs": 276313,
+  "by_kind": {
+    "medical": 120000,
+    "sts": 156313
+  },
+  "by_source": {
+    "cMedQA-V2.0": 120000,
+    "PAWSX": 21684,
+    "ATEC": 11387,
+    "LCQMC": 60000,
+    "BQ": 49991,
+    "AFQMC": 10573,
+    "STSB": 2678
+  },
+  "char_len_mean": 143,
+  "char_len_p99": 346,
+  "per_source_stats": {
+    "C-MTEB/AFQMC": {
+      "rows": 34334,
+      "pos_threshold": 0.6,
+      "positives_kept": 10573,
+      "dropped_as_eval_pair": 0,
+      "label_split": {
+        "neg": 23761,
+        "pos": 10573
+      }
+    },
+    "C-MTEB/ATEC": {
+      "rows": 62477,
+      "pos_threshold": 0.6,
+      "positives_kept": 11387,
+      "dropped_as_eval_pair": 0,
+      "label_split": {
+        "neg": 51090,
+        "pos": 11387
+      }
+    },
+    "C-MTEB/BQ": {
+      "rows": 100000,
+      "pos_threshold": 0.6,
+      "positives_kept": 49991,
+      "dropped_as_eval_pair": 9,
+      "label_split": {
+        "neg": 50000,
+        "pos": 50000
+      }
+    },
+    "C-MTEB/LCQMC": {
+      "rows": 238766,
+      "pos_threshold": 0.6,
+      "positives_kept": 60000,
+      "dropped_as_eval_pair": 65,
+      "label_split": {
+        "pos": 138574,
+        "neg": 100192
+      }
+    },
+    "C-MTEB/PAWSX": {
+      "rows": 49401,
+      "pos_threshold": 0.6,
+      "positives_kept": 21684,
+      "dropped_as_eval_pair": 0,
+      "label_split": {
+        "neg": 27445,
+        "pos": 21684
+      }
+    },
+    "C-MTEB/STSB": {
+      "rows": 5231,
+      "pos_threshold": 3.0,
+      "positives_kept": 2678,
+      "dropped_as_eval_pair": 23,
+      "label_split": {
+        "pos": 2701,
+        "mid": 1694,
+        "neg": 836
+      }
+    },
+    "cMedQA-V2.0": {
+      "rows": 226266,
+      "dropped_as_eval_query": 7592,
+      "dropped_as_eval_corpus": 8776,
+      "kept": 120000
+    }
+  }
+}
