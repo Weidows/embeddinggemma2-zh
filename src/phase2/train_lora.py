@@ -171,6 +171,10 @@ def main() -> None:
     t0 = time.perf_counter()
     trainer.train()
     print(f"[train] done in {(time.perf_counter()-t0)/60:.1f} min")
+    if torch.cuda.is_available():
+        peak = torch.cuda.max_memory_allocated() / 1e9
+        cap = torch.cuda.get_device_properties(0).total_memory * args.vram_fraction / 1e9
+        print(f"[vram] peak allocated={peak:.2f} GB (cap {cap:.2f} GB)")
 
     # ---- package a standalone model ------------------------------------------------
     auto, n_merged = merge_and_unwrap(model)
