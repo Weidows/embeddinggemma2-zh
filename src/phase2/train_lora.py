@@ -75,9 +75,35 @@ def pin_text_modality(st: SentenceTransformer) -> None:
     mod.input_formatter.supported_modalities = ["text"]
 
 
+def merge_and_unwrap(model: SentenceTransformer) -> tuple[object, int]:
+    """Fold in-place LoRA layers into their base weights and drop the wrappers.
+
+    sentence-transformers injects adapters **in place** (peft's `inject_adapter_in_model`), so
+    the top-level class stays `EmbeddingGemma2Model`. Consequences, both verified on a smoke run:
+
+    - `auto_model.merge_and_unload()` does not exist (not a PeftModel);
+    - `save_pretrained()` keeps writing ONLY adapter files (`adapter_config.json` +
+      `adapter_model.safetensors`), i.e. no standalone artifact;
+    - `mod.merge()` alone is not enough — the tuner wrapper stays in the tree (25 of them here),
+      so the wrappers must also be replaced by their base layer.
+    """
+    from peft.tuners.tuners_utils import BaseTunerLayer
+
+    auto = model[0].auto_model
+    n = 0
+    for parent in auto.modules():
+        for attr, child in list(parent.named_children()):
+            if isinstance(child, BaseTunerLayer):
+                child.merge()
+                base = child.get_base_layer() if hasattr(child, "get_base_layer") else child.base_layer
+                setattr(parent, attr, base)
+                n += 1
+    return auto, n
+
+
 def main() -> None:
     args = parse_args()
-    out_dir = Path(args.out) if args.out else OUT_ROOT / f"{args.tag}-smoke"
+    out_dir = Path(args.out) if args.out else OUT_ROOT / (f"{args.tag}-smoke" if args.smoke else args.tag)
     dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
     if torch.cuda.is_available():
         torch.cuda.set_per_process_memory_fraction(args.vram_fraction)
@@ -147,15 +173,22 @@ def main() -> None:
     print(f"[train] done in {(time.perf_counter()-t0)/60:.1f} min")
 
     # ---- package a standalone model ------------------------------------------------
-    # ST's save_pretrained() on a PEFT-wrapped module writes ONLY the adapter (verified: the
-    # first smoke run produced adapter_config.json + adapter_model.safetensors and no base
-    # config/weights), which is not a usable artifact. So: merge the adapter, let transformers
-    # write config.json + weights, and copy the remaining ST/tokenizer files from the base dir.
-    auto = model[0].auto_model
-    merged = auto.merge_and_unload() if hasattr(auto, "merge_and_unload") else auto
+    auto, n_merged = merge_and_unwrap(model)
+    print(f"[merge] folded {n_merged} LoRA layers into the base weights")
     out_dir.mkdir(parents=True, exist_ok=True)
-    merged.save_pretrained(str(out_dir), safe_serialization=True)
-    print("[merge] LoRA merged; base weights written")
+
+    # Save config + weights by hand instead of auto.save_pretrained(): transformers still sees
+    # peft bookkeeping left by ST and takes the adapter branch, which crashes with
+    # `UnboundLocalError: cannot access local variable 'active_adapters'`.
+    from safetensors.torch import save_file
+
+    auto.config.vision_config = None  # text-tower-only build; keeps the 1.5GB multimodal weights out
+    auto.config.audio_config = None
+    auto.config.save_pretrained(str(out_dir))
+    sd = {k: v.detach().cpu().contiguous() for k, v in auto.state_dict().items() if "lora_" not in k}
+    save_file(sd, str(out_dir / "model.safetensors"), metadata={"format": "pt"})
+    n_params = sum(v.numel() for v in sd.values())
+    print(f"[package] config.json + model.safetensors ({n_params/1e6:.1f}M params, {len(sd)} tensors)")
 
     import shutil
 
@@ -169,12 +202,6 @@ def main() -> None:
             shutil.copytree(item, out_dir / name, dirs_exist_ok=True)
         else:
             shutil.copy2(item, out_dir / name)
-
-    cfg_path = out_dir / "config.json"
-    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-    cfg["vision_config"] = None  # text-tower-only build; keeps the 1.5GB multimodal weights out
-    cfg["audio_config"] = None
-    cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
 
     meta = {
         "base_model": args.base,
@@ -210,7 +237,12 @@ def main() -> None:
 
     new = rt.encode(probe, normalize_embeddings=True)
     base = model.encode(probe, normalize_embeddings=True)
-    print(f"[verify] reload ok, dim={new.shape[1]}, cos(new, base)={float((new * base).sum(1).mean()):.4f}")
+    import numpy as np
+
+    delta = float(np.abs(new - base).max())
+    print(f"[verify] reload ok, dim={new.shape[1]}, cos={float((new * base).sum(1).mean()):.6f}, max|delta|={delta:.2e}")
+    if delta == 0.0:
+        print("[verify] WARNING: embeddings identical to the base model — the merge may not have applied")
 
 
 if __name__ == "__main__":
