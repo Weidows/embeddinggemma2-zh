@@ -80,7 +80,11 @@ def aggregate(scores: dict[str, float], only: set[str] | None = None) -> tuple[f
     return overall, type_means
 
 
-LOCAL_LABELS = {"base": "embeddinggemma-2 (local run)", "bgem3": "bge-m3 (local run)"}
+LOCAL_LABELS = {
+    "base": "embeddinggemma-2 (local run)",
+    "bgem3": "bge-m3 (local run)",
+    "finetuned": "embeddinggemma-2-zh (LoRA r32, local run)",
+}
 TYPE_ORDER = ["Retrieval", "Reranking", "PairClassification", "Clustering", "STS", "Classification"]
 
 
