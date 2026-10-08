@@ -28,16 +28,22 @@
 | 1.3 | 对齐 sentence-transformers 的 `prompt_name` 前缀 | 模型卡：漏掉 task 前缀会明显掉分，评测不公平 | cos(SearchQuery, Clustering)=0.8171、cos(SearchQuery, 无前缀)=0.8850（都 <1 → 前缀确实生效）；MRL 256 维重归一后 \|v\|=0.9974 | 同句不同前缀分数必须 <1.0 | ✅ |
 | 1.4 | 跑 MTEB-zh 任务集（`MTEB(cmn, v1)` = C-MTEB，31 任务） | 用标准 harness → 分数可比、可复现 | **全量 31 任务完成**：耗时 **173.8 min**（bs=16 / 截断 2048 / bf16 / 显存上限 70%）。总体 **0.5815**（task-type 均值）。类型均值：Classification 0.6948 / PairClassification 0.6732 / Retrieval 0.6179 / Reranking 0.5664 / Clustering 0.4925 / STS 0.4441。明细 `results/mteb_base_261008_145213.md` | 每个任务的原生分数 + 耗时 + 汇总 | ✅ |
 | 1.5 | 对照组：bge-m3 / Qwen3-Embedding-0.6B | 没有对照的数字没有意义 | **bge-m3 本机实跑完成**（84.9 min，31/31 任务，同 harness/同截断/同 batch）。三方总体：**我们 0.5815 < bge-m3 0.6068 < Qwen3-Embedding-0.6B 0.6748**。**推翻了两个初判**：PAWSX 我们 0.1497 vs bge-m3 0.1566（持平 → 任务难，非模型短板）；聚类我们 0.4925 **高于** bge-m3 0.4615。真短板 = 医疗检索/reranking + AFQMC/ATEC/BQ（均落后 bge-m3 ~10 分）。7 个单项反超 bge-m3 | 同任务集三方对比表 | ✅ |
-| 1.6 | 发布评测报告 | 中文圈第一个可引用数字 | 报告已生成：`report/cmteb-embeddinggemma2-zh.md`（11.7KB，全部数字由 `src/make_report.py` 从原始 JSON 生成，无人工转录；含三方对照 + 逐任务 delta + 复现命令 + 坑附录）。**尚未对外发布** | HF 模型仓库 card + GitHub README 表格 | ⏳ |
+| 1.6 | 发布评测报告 | 中文圈第一个可引用数字 | **已发布**：GitHub <https://github.com/Weidows/embeddinggemma2-zh>（公开，含代码+原始分数+报告）；HF 模型卡 <https://huggingface.co/Weidows/embeddinggemma-2-zh>（公开，8 个文件已读回校验，卡片 frontmatter 解析正常，tags/license/base_model 均已生效）。卡片明确标注**暂无微调权重** | HF 模型仓库 card + GitHub README 表格 | ✅ |
 
 ## 阶段 2：中文微调
 
+**靶子由阶段 1 的数据定死**（vs bge-m3 落后约 0.10 的两块）：
+
+- **医疗领域**：CmedqaRetrieval、MedicalRetrieval、CMedQAv1-reranking、CMedQAv2-reranking
+- **中文 STS**：AFQMC、ATEC、BQ
+
 | # | 步骤 | 为什么 | 运行记录 | 验收成果（可独立验证） | 状态 |
 |---|---|---|---|---|---|
-| 2.1 | 构造中文训练三元组（DuRetrieval / T2Retrieval / M3 / C-MTEB 训练集） | 微调需要 in-domain 对比数据 | | 数据集统计 + 抽样人工检查 | ⬜ |
-| 2.2 | LoRA / 对比学习微调（bf16，禁用 fp16） | 740M 在 16GB 卡上 LoRA 足够 | | loss 曲线 + 训练配置 | ⬜ |
-| 2.3 | 复跑阶段 1 评测 | 证明微调真的有效，而非自说自话 | | 微调前后同任务集对比表 | ⬜ |
-| 2.4 | 发布 `Weidows/embeddinggemma-2-zh` | 中文第一个 v2 微调 | | HF 仓库可下载 + 第三方按 card 步骤复现出同分数 | ⬜ |
+| 2.1 | 数据可得性 + **泄漏检查** | 医疗检索的 qrels 就是评测标签，若拿它造训练对就是作弊 —— 必须先证明训练源与评测集零重叠 | 已确认 STS 六任务有 **train split**（AFQMC/ATEC/BQ/LCQMC/PAWSX/STSB）；医疗检索任务**只有 corpus+queries+qrels**，必须用外部源（cMedQA-V2.0）。`src/phase2/check_leakage.py` 待跑 | 脚本输出：训练源 ∩ 评测查询 = **0** | ⏳ |
+| 2.2 | 构造中文训练对 / 三元组 | 微调需要 in-domain 对比数据 | | 数据集统计 + 抽样人工检查 + 硬负样本来源说明 | ⬜ |
+| 2.3 | LoRA 对比学习微调（bf16，禁用 fp16） | 271M 文本骨干在 16GB 卡上 LoRA 足够 | | loss 曲线 + 完整训练配置 + 可复现命令 | ⬜ |
+| 2.4 | 复跑 C-MTEB 全量并对比 | 证明微调真的有效，而非自说自话 | | 微调前后 31 任务同口径对比表（含 bge-m3 对照） | ⬜ |
+| 2.5 | 发布 `Weidows/embeddinggemma-2-zh` 权重 + 卡片 | 中文第一个 v2 微调 | | HF 仓库可下载 + 第三方按 card 步骤复现出同分数 | ⬜ |
 
 ---
 
