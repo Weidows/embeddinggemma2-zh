@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .uv/
 models/
+hf_upload/
 data/*.jsonl
 results/raw/
 cache/
